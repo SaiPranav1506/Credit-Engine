@@ -87,8 +87,8 @@ Fintech/
 ### Full Setup
 ```bash
 # Clone and setup
-git clone <repository>
-cd Fintech
+git clone https://github.com/SaiPranav1506/Credit-Engine.git
+cd Credit-Engine
 
 # Python environment
 python -m venv venv
@@ -200,3 +200,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - XGBoost for credit scoring optimization
 - Gradio for rapid prototyping</content>
 <parameter name="filePath">c:\Fintech\README.md
+=======
+# Credit-Engine
+>>>>>>> 0d963de08e5162a881ef832485ca65b8a24d1de8
