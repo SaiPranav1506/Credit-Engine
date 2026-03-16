@@ -1,0 +1,132 @@
+flowchart TB
+    subgraph INPUTS["INPUTS"]
+        PDF["Financial PDF\nAnnual Reports"]
+        GST["GST Transactions CSV\nseller, buyer, amount"]
+        BANK["Bank Statements CSV\ndate, debit, credit, balance"]
+        NOTES["Officer Notes\nFree text observations"]
+    end
+
+    subgraph STEP1["Step 1 : PDF PARSING  DistilBERT + PyMuPDF"]
+        direction TB
+        S1A["Extract raw text\nfrom PDF bytes"]
+        S1B["Regex extraction\n15 financial metrics"]
+        S1C["Derive 5 ratios\nD/A  D/E  CR  ICR  NM"]
+        S1D["Risk detection\n14 risk + 10 positive keywords"]
+        S1E["Section classification\nDistilBERT zero-shot NLP"]
+        S1A --> S1B --> S1C
+        S1A --> S1D
+        S1A --> S1E
+    end
+
+    subgraph STEP2["Step 2 : FRAUD DETECTION  NetworkX Graph"]
+        direction TB
+        S2A["Build DiGraph\nGSTIN nodes  transaction edges"]
+        S2B["Circular Trading\nDetect cycles 3-6 entities"]
+        S2C["Amount Anomalies\nZ-score detection"]
+        S2D["Concentration Risk\nAbove 70 percent single counterparty"]
+        S2E["Fraud Score\nHIGH x 25 + MEDIUM x 10"]
+        S2A --> S2B
+        S2A --> S2C
+        S2A --> S2D
+        S2B --> S2E
+        S2C --> S2E
+        S2D --> S2E
+    end
+
+    subgraph STEP3["Step 3 : BANK ANALYSIS  Pandas"]
+        direction TB
+        S3A["Calculate avg balance\ntotal inflow  total outflow"]
+        S3B["Compute EMI-to-income\nratio"]
+        S3A --> S3B
+    end
+
+    subgraph STEP4["Step 4 : RAG CONTEXT  FAISS + MiniLM"]
+        direction TB
+        S4A["Query FAISS index\n384-dim cosine similarity"]
+        S4B["Retrieve top-5\nrelevant document chunks"]
+        S4C["Format context\nfor LLM prompt"]
+        S4A --> S4B --> S4C
+    end
+
+    subgraph STEP5["Step 5 : CREDIT SCORING  TinyLlama 4-bit"]
+        direction TB
+        S5A["Five Cs Rule Engine"]
+        S5B["Character 20 pct\n100 minus fraud x 1.5"]
+        S5C["Capacity 25 pct\nNet margin + ICR"]
+        S5D["Capital 20 pct\nD/E ratio + Net worth"]
+        S5E["Collateral 15 pct\nCurrent ratio + Assets"]
+        S5F["Conditions 20 pct\nBank balance + EMI"]
+        S5G["Weighted Score\nSum of Ci x Wi"]
+        S5H{"Score >= 60 ?"}
+        S5I["APPROVE"]
+        S5J["REVIEW\n40 to 60"]
+        S5K["REJECT\nBelow 40"]
+        S5L["Loan Limit\nRevenue x 0.4 x Score/100"]
+        S5M["Risk Premium\n2 pct + 100-Score x 0.05"]
+        S5N["AI Narrative\nTinyLlama inference"]
+        S5A --> S5B
+        S5A --> S5C
+        S5A --> S5D
+        S5A --> S5E
+        S5A --> S5F
+        S5B --> S5G
+        S5C --> S5G
+        S5D --> S5G
+        S5E --> S5G
+        S5F --> S5G
+        S5G --> S5H
+        S5H -->|Yes| S5I
+        S5H -->|Maybe| S5J
+        S5H -->|No| S5K
+        S5G --> S5L
+        S5G --> S5M
+        S5G --> S5N
+    end
+
+    subgraph STEP6["Step 6 : SAVE DECISION"]
+        DB[("SQLite DB\ndemo.sqlite")]
+    end
+
+    subgraph STEP7["Step 7 : CAM PDF  ReportLab"]
+        direction TB
+        S7A["Header + Executive Summary"]
+        S7B["Five Cs Analysis Table"]
+        S7C["Financial Highlights"]
+        S7D["Fraud and Risk Analysis"]
+        S7E["AI Recommendation"]
+        S7A --> S7B --> S7C --> S7D --> S7E
+    end
+
+    subgraph OUTPUTS["OUTPUTS"]
+        O1["Decision Tab\nAPPROVE or REJECT + Score + Loan Limit"]
+        O2["Five Cs Tab\nVisual score bars per dimension"]
+        O3["Narrative Tab\nAI-generated credit analysis"]
+        O4["Status Tab\nPipeline execution log"]
+        O5["CAM PDF Download\nProfessional credit memo"]
+    end
+
+    PDF --> STEP1
+    GST --> STEP2
+    BANK --> STEP3
+    NOTES --> STEP5
+
+    STEP1 --> STEP5
+    STEP2 --> STEP5
+    STEP3 --> STEP5
+    STEP4 --> STEP5
+
+    STEP5 --> STEP6
+    STEP5 --> STEP7
+
+    STEP6 --> OUTPUTS
+    STEP7 --> OUTPUTS
+
+    style INPUTS fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+    style STEP1 fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    style STEP2 fill:#fce4ec,stroke:#e91e63,stroke-width:2px
+    style STEP3 fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
+    style STEP4 fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
+    style STEP5 fill:#fff9c4,stroke:#fbc02d,stroke-width:2px
+    style STEP6 fill:#e0f2f1,stroke:#009688,stroke-width:2px
+    style STEP7 fill:#e8eaf6,stroke:#3f51b5,stroke-width:2px
+    style OUTPUTS fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
