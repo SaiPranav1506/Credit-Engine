@@ -150,50 +150,9 @@ python train_scorer.py
 - **GST CSV**: Tax transaction data for fraud analysis
 - **Bank CSV**: Transaction history for cash flow analysis
 
-## 🧪 Testing
 
-```bash
-# Test credit engine
-cd credit_engine
-python -m pytest tests/ -v
 
-# Test API endpoints
-python -c "import requests; print(requests.get('http://localhost:5000/api/health').json())"
-
-# Test React frontend
-cd frontend && npm run test
-```
-
-## 🚀 Deployment
-
-### Production API
-```bash
-# Using gunicorn
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:5000 api:app
-```
-
-### Frontend Build
-```bash
-cd frontend
-npm run build
-# Serve dist/ with static server
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Ensure compatibility with both interfaces
-5. Update documentation
-6. Submit a pull request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - Built with TinyLlama, DistilBERT, and FAISS
 - React + TypeScript frontend architecture
