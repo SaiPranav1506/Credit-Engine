@@ -1,0 +1,62 @@
+# Credit Decision Engine Configuration
+# Optimized for 4GB VRAM GPU
+
+models:
+  scorer:
+    name: "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+    quantization: "4bit"
+    max_new_tokens: 192
+    temperature: 0.3
+    vram_usage_gb: 1.2
+    enable_llm_on_cpu: false
+  parser:
+    name: "distilbert-base-uncased"
+    max_length: 512
+    vram_usage_gb: 0.4
+    enable_section_classification: false
+  embeddings:
+    name: "sentence-transformers/all-MiniLM-L6-v2"
+    vram_usage_gb: 0.2
+
+faiss:
+  index_type: "FlatL2"
+  embedding_dim: 384
+  chunk_size: 256
+  chunk_overlap: 50
+
+fraud:
+  circular_trade_threshold: 0.7
+  min_cycle_length: 3
+  max_cycle_length: 6
+  suspicious_amount_std: 2.0
+
+credit:
+  min_score: 0
+  max_score: 100
+  approve_threshold: 70  # Increased from 60 to make approvals stricter
+  reject_threshold: 40
+  risk_premium_base: 0.02
+  max_loan_to_revenue_ratio: 0.4
+
+five_cs:
+  character_weight: 0.20
+  capacity_weight: 0.30  # Increased from 0.25 to emphasize profitability
+  capital_weight: 0.20
+  collateral_weight: 0.15
+  conditions_weight: 0.15  # Slightly decreased
+
+gradio:
+  server_port: 7860
+  share: false
+  theme: "soft"
+
+database:
+  path: "data/demo.sqlite"
+
+paths:
+  data_dir: "data"
+  output_dir: "output"
+  dataset_dir: "dataset"
+  external_dataset_dir: "Dataset"
+  rag_index_path: "data/rag_index.faiss"
+  rag_docs_path: "data/rag_docs.json"

@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: credit-engine-backend
+    env: python
+    pythonVersion: 3.9
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 4 -b 0.0.0.0:$PORT api:app
+    plan: free
+    region: oregon
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PYTHON_VERSION
+        value: "3.9"
+    autoDeploy: true
+    repo: https://github.com/SaiPranav1506/Credit-Engine.git
+    branch: main

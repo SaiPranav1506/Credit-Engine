@@ -1,0 +1,31 @@
+# Backend Dockerfile
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY api.py .
+COPY credit_engine ./credit_engine
+
+# Create uploads and logs directories
+RUN mkdir -p uploads logs
+
+EXPOSE 5000
+
+ENV FLASK_APP=api.py
+ENV FLASK_ENV=production
+ENV PYTHONUNBUFFERED=1
+
+HEALTHCHECK --interval=10s --timeout=5s --retries=3 \
+    CMD curl -f http://localhost:5000/api/health || exit 1
+
+CMD ["python", "-m", "gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--timeout", "300", "--access-logfile", "logs/access.log", "--error-logfile", "logs/error.log", "api:app"]
