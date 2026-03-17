@@ -51,11 +51,35 @@ class CreditScorer:
             "conditions": five_cs_cfg.get("conditions_weight", 0.20),
         }
 
-        # Load ML model for decision
-        model_path = Path(__file__).parent.parent / "data" / "scorer_model.pkl"
+        # Load ML model for decision - prefer full LendingClub ensemble
+        lc_model_path = Path(__file__).parent.parent / "data" / "ensemble_lc_lendingclub_full.pkl"
+        fallback_model_path = Path(__file__).parent.parent / "data" / "ensemble_lc_lendingclub_2000_samples.pkl"
+        
         self.ml_model = None
-        if model_path.exists():
-            self.ml_model = joblib.load(model_path)
+        self.label_encoder = None
+        self.scaler = None
+        
+        # Try full LendingClub model first
+        if lc_model_path.exists():
+            self.ml_model = joblib.load(lc_model_path)
+            # Load associated scaler and encoder
+            lc_encoder_path = Path(__file__).parent.parent / "data" / "label_encoder_lc_lendingclub_full.pkl"
+            lc_scaler_path = Path(__file__).parent.parent / "data" / "scaler_lc_lendingclub_full.pkl"
+            if lc_encoder_path.exists():
+                self.label_encoder = joblib.load(lc_encoder_path)
+            if lc_scaler_path.exists():
+                self.scaler = joblib.load(lc_scaler_path)
+            print("✓ Using LendingClub ensemble model (5000 samples, 69.9% CV accuracy)")
+        elif fallback_model_path.exists():
+            self.ml_model = joblib.load(fallback_model_path)
+            # Load associated scaler and encoder
+            fallback_encoder_path = Path(__file__).parent.parent / "data" / "label_encoder_lc_lendingclub_2000_samples.pkl"
+            fallback_scaler_path = Path(__file__).parent.parent / "data" / "scaler_lc_lendingclub_2000_samples.pkl"
+            if fallback_encoder_path.exists():
+                self.label_encoder = joblib.load(fallback_encoder_path)
+            if fallback_scaler_path.exists():
+                self.scaler = joblib.load(fallback_scaler_path)
+            print("⚠ Using 2000-sample model (full model not found)")
         else:
             print("Warning: ML model not found, falling back to rule-based scoring.")
 
@@ -122,8 +146,21 @@ class CreditScorer:
                 fraud_result.get("fraud_score", 0),
                 bank_analysis.get("avg_balance", 0) if bank_analysis else 0
             ]
-            pred = self.ml_model.predict([features])[0]
-            decision = "APPROVE" if pred == 1 else "REJECT"
+            
+            # Scale features if scaler is available
+            if self.scaler:
+                features_scaled = self.scaler.transform([features])[0]
+            else:
+                features_scaled = features
+            
+            pred = self.ml_model.predict([features_scaled])[0]
+            
+            # Handle both numeric and string predictions
+            if isinstance(pred, str):
+                decision = pred
+            else:
+                decision = "APPROVE" if pred == 1 else "REJECT"
+            
             total_score = 80 if decision == "APPROVE" else 30  # Simplified score based on decision
         else:
             # Weighted total
