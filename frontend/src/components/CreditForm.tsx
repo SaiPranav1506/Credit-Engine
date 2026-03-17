@@ -55,7 +55,8 @@ const CreditForm: React.FC<CreditFormProps> = ({ onSuccess }) => {
         formDataToSend.append('bank_file', documentFiles.bankFile);
       }
 
-      const response = await fetch('/api/process-application', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${apiUrl}/api/process-application`, {
         method: 'POST',
         body: formDataToSend,
       });
