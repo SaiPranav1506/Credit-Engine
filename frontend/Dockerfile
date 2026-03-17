@@ -1,12 +1,12 @@
 # Frontend Dockerfile - Multi-stage build for optimization
-FROM node:18-alpine as builder
+FROM node:18-slim as builder
 
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies - try npm ci first, fallback to npm install
+# Install dependencies
 RUN npm ci || npm install
 
 # Copy source code
