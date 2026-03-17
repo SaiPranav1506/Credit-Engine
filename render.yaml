@@ -16,3 +16,19 @@ services:
     autoDeploy: true
     repo: https://github.com/SaiPranav1506/Credit-Engine.git
     branch: main
+
+  - type: web
+    name: credit-engine-frontend
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: frontend/Dockerfile
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: credit-engine-backend
+          type: web
+          property: url
+    autoDeploy: true
+    repo: https://github.com/SaiPranav1506/Credit-Engine.git
+    branch: main

@@ -28,6 +28,8 @@ COPY --from=builder /app/dist ./dist
 
 EXPOSE 3000
 
+CMD ["sh", "-c", "serve -s dist -l ${PORT:-3000}"]
+
 # Health check
 HEALTHCHECK --interval=10s --timeout=5s --retries=3 \
     CMD wget --quiet --tries=1 --spider http://localhost:3000/ || exit 1
