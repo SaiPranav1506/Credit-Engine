@@ -9,7 +9,6 @@ services:
     startCommand: gunicorn -w 2 -b 0.0.0.0:$PORT -t 120 api:app
     plan: free
     region: oregon
-    memoryGB: 1
     envVars:
       - key: FLASK_ENV
         value: production
@@ -41,4 +40,3 @@ services:
     autoDeploy: true
     repo: https://github.com/SaiPranav1506/Credit-Engine.git
     branch: main
-    startAsShellCommand: false
