@@ -6,8 +6,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci || npm install
+# Install dependencies with proper permissions
+RUN npm ci --legacy-peer-deps && chmod -R 755 node_modules/.bin/
 
 # Copy source code
 COPY . .

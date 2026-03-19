@@ -12,7 +12,7 @@ services:
       - key: FLASK_ENV
         value: production
       - key: PYTHON_VERSION
-        value: "3.9"
+        value: "3.9.18"
       - key: PYTHONUNBUFFERED
         value: "1"
     autoDeploy: true
