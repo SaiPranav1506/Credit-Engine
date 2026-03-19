@@ -30,10 +30,7 @@ services:
     dockerContext: ./frontend
     envVars:
       - key: VITE_API_URL
-        fromService:
-          name: credit-engine-backend
-          type: web
-          property: url
+        value: https://credit-engine-backend.onrender.com
       - key: NODE_ENV
         value: production
     autoDeploy: true
