@@ -1,34 +1,44 @@
 services:
+  # Backend - Python Flask API with Credit Scoring Model
   - type: web
     name: credit-engine-backend
     env: python
     pythonVersion: 3.9
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn -w 4 -b 0.0.0.0:$PORT api:app
+    buildCommand: pip install --no-cache-dir -r requirements.txt
+    startCommand: gunicorn -w 2 -b 0.0.0.0:$PORT -t 120 api:app
     plan: free
     region: oregon
+    memoryGB: 1
     envVars:
       - key: FLASK_ENV
         value: production
       - key: PYTHON_VERSION
         value: "3.9"
+      - key: PYTHONUNBUFFERED
+        value: "1"
     autoDeploy: true
     repo: https://github.com/SaiPranav1506/Credit-Engine.git
     branch: main
+    healthCheckPath: /api/health
 
+  # Frontend - React/Vite SPA served with Node.js
   - type: web
     name: credit-engine-frontend
     runtime: docker
     plan: free
     region: oregon
     dockerfilePath: frontend/Dockerfile
+    dockerContext: ./frontend
     envVars:
       - key: VITE_API_URL
         fromService:
           name: credit-engine-backend
           type: web
           property: url
+      - key: NODE_ENV
+        value: production
     autoDeploy: true
     repo: https://github.com/SaiPranav1506/Credit-Engine.git
     branch: main
+    startAsShellCommand: false

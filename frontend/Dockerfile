@@ -26,13 +26,12 @@ RUN npm install -g serve
 # Copy built files from builder stage
 COPY --from=builder /app/dist ./dist
 
+# Expose port (will use PORT env var from Render)
 EXPOSE 3000
 
-CMD ["sh", "-c", "serve -s dist -l ${PORT:-3000}"]
-
 # Health check
-HEALTHCHECK --interval=10s --timeout=5s --retries=3 \
-    CMD wget --quiet --tries=1 --spider http://localhost:3000/ || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD wget --quiet --tries=1 --spider http://localhost:${PORT:-3000}/ || exit 1
 
-# Start the application
-CMD ["serve", "-s", "dist", "-l", "3000"]
+# Start the application - respects PORT environment variable for Render
+CMD ["sh", "-c", "serve -s dist -l ${PORT:-3000}"]
