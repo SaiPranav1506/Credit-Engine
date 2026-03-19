@@ -3,7 +3,6 @@ services:
   - type: web
     name: credit-engine-backend
     env: python
-    pythonVersion: 3.9
     rootDir: backend
     buildCommand: pip install --no-cache-dir -r requirements.txt
     startCommand: gunicorn -w 2 -b 0.0.0.0:$PORT -t 120 api:app
