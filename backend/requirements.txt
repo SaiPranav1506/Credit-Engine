@@ -2,7 +2,7 @@ torch>=2.8.0,<2.9
 transformers>=4.40.0,<5
 bitsandbytes>=0.48.0; platform_system != "Windows"
 accelerate>=1.10.0,<1.11
-gradio>=4.50.0,<5
+gradio>=4.44.0,<4.45
 sentence-transformers>=3.0.0,<4
 networkx>=3.5,<4
 faiss-cpu>=1.8.0,<2
