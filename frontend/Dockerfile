@@ -7,13 +7,14 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies with proper permissions
-RUN npm ci --legacy-peer-deps && chmod -R 755 node_modules/.bin/
+RUN npm install --legacy-peer-deps && npm ci --legacy-peer-deps 2>/dev/null || true
+RUN chmod -R 755 node_modules/.bin/ && chmod -R 755 node_modules/vite/bin/ 2>/dev/null || true
 
 # Copy source code
 COPY . .
 
 # Build optimized production bundle
-RUN npm run build
+RUN npm run build || (npm install && npm run build)
 
 # Production stage - serve with lightweight server
 FROM node:18-alpine

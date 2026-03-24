@@ -1,4 +1,4 @@
-torch>=2.9.0,<2.11
+torch>=2.8.0,<2.9
 transformers>=4.57.0,<5
 bitsandbytes>=0.48.0; platform_system != "Windows"
 accelerate>=1.11.0,<2
